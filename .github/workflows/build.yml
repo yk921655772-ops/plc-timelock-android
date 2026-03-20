@@ -21,7 +21,7 @@ jobs:
           -w /home/user/app \
           -e BUILDOZER_WARN_ON_ROOT=1 \
           kivy/buildozer:latest \
-          android debug
+          --no-check-root android debug
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
