@@ -32,7 +32,7 @@ fullscreen = 0
 android.permissions = android.permission.WRITE_EXTERNAL_STORAGE,android.permission.READ_EXTERNAL_STORAGE
 android.api = 34
 android.minapi = 26
-android.ndk = 25b
+android.ndk = 26b
 android.archs = arm64-v8a,armeabi-v7a
 
 # 不需要网络权限（纯离线）
