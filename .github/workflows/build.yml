@@ -14,12 +14,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Build with Buildozer
-      uses: ArtemSBulgakov/buildozer-action@v1
-      with:
-        command: buildozer android debug
-        workdir: .
-        buildozer_version: master
+    - name: Build with Buildozer Docker
+      run: |
+        docker run --rm \
+          -v $(pwd):/home/user/app \
+          -w /home/user/app \
+          kivy/buildozer:latest \
+          sh -c "export BUILDOZER_WARN_ON_ROOT=1; exec buildozer android debug"
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
