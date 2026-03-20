@@ -17,11 +17,11 @@ jobs:
     - name: Build with Buildozer Docker
       run: |
         docker run --rm \
-          -v $(pwd):/home/user/app \
+          --entrypoint sh \
+          -v "$(pwd)":/home/user/app \
           -w /home/user/app \
-          -e BUILDOZER_WARN_ON_ROOT=1 \
           kivy/buildozer:latest \
-          --no-check-root android debug
+          -c "export BUILDOZER_WARN_ON_ROOT=1; buildozer android debug"
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
