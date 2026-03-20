@@ -17,12 +17,10 @@ jobs:
     - name: Build with Buildozer Docker
       run: |
         docker run --rm \
-          -v $(pwd):/home/user/app \
-          -w /home/user/app \
+          -v $(pwd):/home/user/hostcwd \
           -e BUILDOZER_WARN_ON_ROOT=1 \
-          --user 1000:1000 \
           kivy/buildozer:latest \
-          android debug
+          bash -c "cp -r /home/user/hostcwd /home/user/app && cd /home/user/app && buildozer android debug && cp bin/*.apk /home/user/hostcwd/"
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
