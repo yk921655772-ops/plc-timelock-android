@@ -8,63 +8,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    timeout-minutes: 90
+    timeout-minutes: 120
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-
-    - name: Install system dependencies
+    - name: Build with Buildozer Docker
       run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          git zip unzip openjdk-17-jdk \
-          python3-pip autoconf libtool pkg-config \
-          zlib1g-dev libncurses5-dev libncursesw5-dev \
-          libtinfo5 cmake libffi-dev libssl-dev \
-          build-essential libltdl-dev \
-          python3-dev python3-setuptools \
-          libuuid1 uuid-dev libxslt-dev
-
-    - name: Install buildozer and dependencies
-      run: |
-        pip install --upgrade pip setuptools wheel
-        pip install buildozer==1.5.0
-        pip install cython==0.29.36
-        pip install python-for-android==2024.1.21
-
-    - name: Setup Android SDK
-      run: |
-        mkdir -p ~/.buildozer/android/platform
-        cd ~/.buildozer/android/platform
-        wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-        unzip -q commandlinetools-linux-11076708_latest.zip
-        mkdir -p android-sdk/cmdline-tools
-        mv cmdline-tools android-sdk/cmdline-tools/latest
-        export ANDROID_SDK_ROOT=$HOME/.buildozer/android/platform/android-sdk
-        export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin
-        yes | sdkmanager --licenses
-        sdkmanager "build-tools;33.0.2" "platform-tools" "platforms;android-34"
-
-    - name: Cache buildozer global directory
-      uses: actions/cache@v4
-      with:
-        path: ~/.buildozer
-        key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
-        restore-keys: |
-          buildozer-${{ runner.os }}-
-
-    - name: Build APK
-      env:
-        BUILDOZER_WARN_ON_ROOT: '0'
-        ANDROID_SDK_ROOT: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
-      run: |
-        buildozer -v android debug
+        docker run --rm \
+          -v $(pwd):/home/user/app \
+          -w /home/user/app \
+          kivy/buildozer:latest \
+          bash -c "echo y | buildozer android debug"
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
